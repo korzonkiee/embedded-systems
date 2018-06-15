@@ -700,7 +700,6 @@ void CANErrorHandler(void)
 
 const uint8_t name_size = 6;
 const char name[name_size] = {'M', 'A', 'C', 'I', 'E', 'J'};
-uint8_t curr_name_index = 0;
 
 const uint16_t send_delay_max = 1000000;
 uint16_t send_delay_curr = 0;
@@ -845,18 +844,34 @@ int main(void)
 
             if (send_delay_curr > send_delay_max)
             {
-                g_ui8TXMsgData = name[curr_name_index++ % name_size];
+                // Send first byte indicating lenght of name
+                g_ui8TXMsgData = name_size;
+
+                CANMessageSet(CAN0_BASE, TXOBJECT, &g_sCAN0TxMessage,
+                              MSG_OBJ_TYPE_TX);
+
+                // Send name
+                int i;
+                for (i = 0; i < name_size; i++)
+                {
+                    g_ui8TXMsgData = name[i];
+                    CANMessageSet(CAN0_BASE, TXOBJECT, &g_sCAN0TxMessage,
+                                  MSG_OBJ_TYPE_TX);
+                }
+
+                // Send ETB
+                g_ui8TXMsgData = 23;
+                CANMessageSet(CAN0_BASE, TXOBJECT, &g_sCAN0TxMessage,
+                              MSG_OBJ_TYPE_TX);
+
                 GrStringDrawCentered(&g_sContext, "TX Data", -1,
                                      GrContextDpyWidthGet(&g_sContext) / 2,
                                      SCREENLINE4, true);
                 GrStringDrawCentered(&g_sContext,
-                                     (const char *)&g_ui8TXMsgData, 1,
+                                     (const char *)&name, name_size,
                                      GrContextDpyWidthGet(&g_sContext) / 2,
                                      SCREENLINE5, true);
                 GrFlush(&g_sContext);
-
-                CANMessageSet(CAN0_BASE, TXOBJECT, &g_sCAN0TxMessage,
-                              MSG_OBJ_TYPE_TX);
 
                 send_delay_curr = 0;
             }

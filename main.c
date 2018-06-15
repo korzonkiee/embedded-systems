@@ -805,35 +805,49 @@ int main(void)
             //
             // See if there is something new to transmit
             //
-            while (ROM_UARTCharsAvail(UART0_BASE))
-            {
-                //
-                // Read the next character from the UART terminal
-                //
-                g_ui8TXMsgData = ROM_UARTCharGetNonBlocking(UART0_BASE);
+            // while (ROM_UARTCharsAvail(UART0_BASE))
+            // {
+            //     //
+            //     // Read the next character from the UART terminal
+            //     //
+            //     g_ui8TXMsgData = ROM_UARTCharGetNonBlocking(UART0_BASE);
 
-                //
-                // Write the character to the display
-                // clear line with spaces
-                //
-                GrStringDrawCentered(&g_sContext, "TX Data", -1,
-                                     GrContextDpyWidthGet(&g_sContext) / 2,
-                                     SCREENLINE4, true);
-                GrStringDrawCentered(&g_sContext,
-                                     (const char *)&g_ui8TXMsgData, 1,
-                                     GrContextDpyWidthGet(&g_sContext) / 2,
-                                     SCREENLINE5, true);
-                GrFlush(&g_sContext);
+            //     //
+            //     // Write the character to the display
+            //     // clear line with spaces
+            //     //
+            //     GrStringDrawCentered(&g_sContext, "TX Data", -1,
+            //                          GrContextDpyWidthGet(&g_sContext) / 2,
+            //                          SCREENLINE4, true);
+            //     GrStringDrawCentered(&g_sContext,
+            //                          (const char *)&g_ui8TXMsgData, 1,
+            //                          GrContextDpyWidthGet(&g_sContext) / 2,
+            //                          SCREENLINE5, true);
+            //     GrFlush(&g_sContext);
 
-                //
-                // Send the CAN message using object number TXOBJECT (not the
-                // same thing as CAN ID, which is also TXOBJECT in this
-                // example).  This function will cause the message to be
-                // transmitted right away.
-                //
-                CANMessageSet(CAN0_BASE, TXOBJECT, &g_sCAN0TxMessage,
-                              MSG_OBJ_TYPE_TX);
-            }
+            //     //
+            //     // Send the CAN message using object number TXOBJECT (not the
+            //     // same thing as CAN ID, which is also TXOBJECT in this
+            //     // example).  This function will cause the message to be
+            //     // transmitted right away.
+            //     //
+            //     CANMessageSet(CAN0_BASE, TXOBJECT, &g_sCAN0TxMessage,
+            //                   MSG_OBJ_TYPE_TX);
+            // }
+
+            g_ui8TXMsgData = "A";
+
+            GrStringDrawCentered(&g_sContext, "TX Data", -1,
+                                 GrContextDpyWidthGet(&g_sContext) / 2,
+                                 SCREENLINE4, true);
+            GrStringDrawCentered(&g_sContext,
+                                 (const char *)&g_ui8TXMsgData, 1,
+                                 GrContextDpyWidthGet(&g_sContext) / 2,
+                                 SCREENLINE5, true);
+            GrFlush(&g_sContext);
+
+            CANMessageSet(CAN0_BASE, TXOBJECT, &g_sCAN0TxMessage,
+                          MSG_OBJ_TYPE_TX);
         }
     }
 }
